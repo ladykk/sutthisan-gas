@@ -14,3 +14,11 @@ export const env = createEnv({
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,
 });
+
+export const drizzleEnv = createEnv({
+  server: {
+    DATABASE_URL: z.string().url(),
+  },
+  runtimeEnv: process.env,
+  emptyStringAsUndefined: true,
+});
