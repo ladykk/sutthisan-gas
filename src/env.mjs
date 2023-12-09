@@ -3,6 +3,7 @@ import { z } from "zod";
 export const env = createEnv({
   server: {
     DATABASE_URL: z.string().url(),
+    EDGE_CONFIG: z.string().url(),
   },
   clientPrefix: "NEXT_PUBLIC_",
   client: {

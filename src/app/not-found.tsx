@@ -1,5 +1,5 @@
 "use client";
-import GitFooter from "@/components/global/git-footer";
+import GitFooter from "@/components/common/git-footer";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { usePathname } from "next/navigation";

@@ -11,18 +11,22 @@ export const SBServerClient = (cookieStore: ReturnType<typeof cookies>) =>
           return cookieStore.get(key)?.value;
         },
         set(key, value, options) {
-          cookieStore.set({
-            name: key,
-            value,
-            ...options,
-          });
+          try {
+            cookieStore.set({
+              name: key,
+              value,
+              ...options,
+            });
+          } catch (e) {}
         },
         remove(key, options) {
-          cookieStore.set({
-            name: key,
-            value: "",
-            ...options,
-          });
+          try {
+            cookieStore.set({
+              name: key,
+              value: "",
+              ...options,
+            });
+          } catch (e) {}
         },
       },
     }

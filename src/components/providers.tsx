@@ -2,6 +2,7 @@
 import { ReactNode, useState } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
+import { Toaster } from "./ui/toaster";
 
 export default function Providers({
   children,
@@ -14,6 +15,7 @@ export default function Providers({
   return (
     <QueryClientProvider client={queryClient}>
       {children}
+      <Toaster />
       {env === "DEV" && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>
   );

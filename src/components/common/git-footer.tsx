@@ -8,10 +8,11 @@ import {
 
 export default function GitFooter() {
   return (
-    <footer className="p-3 flex justify-between items-center w-full">
-      <p className="mr-auto text-sm font-medium">
+    <footer className="p-3 flex justify-between items-center w-full flex-col sm:flex-row">
+      <p className="text-sm font-medium h-10 px-4 py-2">
         Develop by Mr.Rattapon Apiratjit
       </p>
+      <div className="flex-1" />
       <Link
         className={buttonVariants({ variant: "ghost" })}
         href="tel:+66623434114"

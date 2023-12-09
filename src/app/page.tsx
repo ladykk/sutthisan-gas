@@ -1,13 +1,24 @@
-import GitFooter from "@/components/global/git-footer";
+import AuthSession from "@/components/common/auth";
+import GitFooter from "@/components/common/git-footer";
 import { buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { env } from "@/env.mjs";
+import { getSession, signOut } from "@/server/actions/auth";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function Home() {
+export default async function Home() {
+  const session = await getSession();
   return (
     <main className=" min-h-screen flex justify-center items-center flex-col">
+      <div className="p-5 w-full">
+        <AuthSession
+          session={session}
+          mutationFn={signOut}
+          className="ml-auto w-fit"
+        />
+      </div>
+
       <div className="flex flex-1 flex-col justify-center items-center">
         <Image
           src="/ptt-or-logo.png"
