@@ -4,8 +4,6 @@ import { UserX } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import { env } from "@/env.mjs";
-import { signUp } from "@/server/actions/auth";
-
 export const metadata = {
   title: `Sign Up | ${env.NEXT_PUBLIC_ORGANIZATION_NAME}`,
 };
@@ -14,7 +12,7 @@ export default async function SignUpPage() {
   const allowSignUp = await getAllowSignUp();
   return (
     <div className="flex-1 flex justify-center items-center">
-      {allowSignUp ? <SignUpClient mutationFn={signUp} /> : <RestrictSignUp />}
+      {allowSignUp ? <SignUpClient /> : <RestrictSignUp />}
     </div>
   );
 }

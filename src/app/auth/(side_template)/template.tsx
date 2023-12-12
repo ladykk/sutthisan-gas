@@ -22,8 +22,8 @@ export default function Template({ children }: { children?: ReactNode }) {
           </p>
         </div>
       </div>
-      <div className="max-h-screen flex-1 overflow-auto">
-        <div className="flex px-4 py-5 w-full min-h-screen">{children}</div>
+      <div className="flex-1 overflow-auto flex">
+        <div className="flex px-4 py-5 w-full flex-1">{children}</div>
       </div>
     </div>
   );

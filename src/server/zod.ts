@@ -30,3 +30,49 @@ export const zodPhoneNumber = z
   .regex(/^(0[6-9]{1}[0-9]{8})$/, {
     message: "Invalid phone number",
   });
+
+export const zodDate = z
+  .string()
+  .refine((val) => {
+    const date = new Date(val);
+    return !isNaN(date.getTime());
+  }, "Invalid date")
+  .transform((val) => new Date(val));
+
+export const zodFile = (options?: {
+  maxSizeMB?: number;
+  allowedFileTypes?: string[];
+}) =>
+  z
+    .instanceof(File)
+    .refine(
+      (file) =>
+        options?.maxSizeMB
+          ? file.size <= options.maxSizeMB * 1024 * 1024
+          : true,
+      {
+        message: `File size must be smaller than ${options?.maxSizeMB}MB`,
+      }
+    )
+    .refine(
+      (file) =>
+        options?.allowedFileTypes
+          ? options.allowedFileTypes.includes(file.type)
+          : true,
+      {
+        message: `File type must be one of ${options?.allowedFileTypes?.join(
+          ", "
+        )}`,
+      }
+    );
+
+export const getFileExtension = (file: File) => {
+  return file.name.split(".").pop();
+};
+
+export const IMAGE_MIME_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/jpg",
+  "image/webp",
+];

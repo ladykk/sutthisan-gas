@@ -18,18 +18,15 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { handleActionError } from "@/lib/actions";
-import { TSignUpFn, TSignUpSchema } from "@/server/actions/auth";
+import { handleActionError, objectToFormData } from "@/lib/actions";
+import { TSignUpSchema, signUp } from "@/server/actions/auth";
+import { useAction } from "next-safe-action/hook";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useMutation } from "react-query";
 
-type TSignUpClientProps = {
-  mutationFn: TSignUpFn;
-};
-
-export default function SignUpClient(props: TSignUpClientProps) {
+export default function SignUpClient() {
   const form = useForm<TSignUpSchema>({
     defaultValues: {
       email: "",
@@ -42,37 +39,25 @@ export default function SignUpClient(props: TSignUpClientProps) {
 
   const { toast } = useToast();
   const router = useRouter();
-  const mutation = useMutation({
-    mutationFn: props.mutationFn,
-    onSuccess: (data) => {
-      console.log(data);
-      if (data.status === "success") {
-        toast({
-          title: "Account created.",
-          description: "Your account has been created.",
-          variant: "success",
-        });
-        router.push("/auth/signin");
-      } else {
-        handleActionError(data, {
-          setFormError: form.setError,
-          message: {
-            validation: (message) =>
-              toast({
-                title: "Validation Error",
-                description: message,
-                variant: "warning",
-              }),
-          },
-        });
-      }
+  const action = useAction(signUp, {
+    onSuccess: () => {
+      toast({
+        title: "Account created.",
+        description: "Your account has been created.",
+        variant: "success",
+      });
+      router.push("/auth/signin");
     },
+    onError: handleActionError(toast, form.setError, "Could not sign up."),
   });
+
   return (
     <Form {...form}>
       <form
         className="max-w-lg w-full"
-        onSubmit={form.handleSubmit((data) => mutation.mutate(data))}
+        onSubmit={form.handleSubmit((data) =>
+          action.execute(objectToFormData(data))
+        )}
       >
         <Card>
           <CardHeader>
@@ -156,7 +141,7 @@ export default function SignUpClient(props: TSignUpClientProps) {
             />
           </CardContent>
           <CardFooter>
-            <Button loading={mutation.isLoading} type="submit">
+            <Button loading={action.status === "executing"} type="submit">
               Sign Up
             </Button>
             <Link

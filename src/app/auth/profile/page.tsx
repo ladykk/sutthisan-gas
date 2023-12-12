@@ -1,10 +1,5 @@
 import { env } from "@/env.mjs";
-import {
-  getSession,
-  updateAvatar,
-  updatePassword,
-  updateProfile,
-} from "@/server/actions/auth";
+import { getUser } from "@/server/actions/auth";
 import { BackButton } from "@/components/common/action-button";
 import {
   ProfileAvatarForm,
@@ -17,7 +12,7 @@ export const metadata = {
 };
 
 export default async function ProfilePage() {
-  const session = await getSession();
+  const user = await getUser();
   return (
     <div className="bg-muted min-h-screen">
       <div className="max-w-7xl mx-auto">
@@ -27,15 +22,12 @@ export default async function ProfilePage() {
         </div>
         <div className="flex flex-col px-5 pb-5 gap-5 lg:flex-row">
           <div className="flex-1">
-            <ProfileInfoForm mutationFn={updateProfile} session={session} />
+            <ProfileInfoForm user={user.data} />
           </div>
 
           <div className="space-y-5 flex-1">
-            <ProfileAvatarForm mutationFn={updateAvatar} session={session} />
-            <ProfileChangePasswordForm
-              mutationFn={updatePassword}
-              session={session}
-            />
+            <ProfileAvatarForm user={user.data} />
+            <ProfileChangePasswordForm user={user.data} />
           </div>
         </div>
       </div>

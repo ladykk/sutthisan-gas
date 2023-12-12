@@ -1,6 +1,6 @@
 "use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -19,65 +19,61 @@ import {
 import { FileUpload, Input, useFileUploadUrl } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { handleActionError } from "@/lib/actions";
+import {
+  formDataToObject,
+  handleActionError,
+  objectToFormData,
+} from "@/lib/actions";
 import { getNamePrefix } from "@/lib/auth";
 import {
-  TGetSession,
-  TUpdateAvatarFn,
+  TGetUser,
   TUpdateAvatarSchema,
-  TUpdatePasswordFn,
   TUpdatePasswordSchema,
-  TUpdateProfileFn,
   TUpdateProfileSchema,
+  updateAvatar,
+  updatePassword,
+  updateProfile,
 } from "@/server/actions/auth";
-import { IMAGE_MIME_TYPES } from "@/server/form";
+import { IMAGE_MIME_TYPES } from "@/server/zod";
+import { useAction } from "next-safe-action/hook";
 import { useForm } from "react-hook-form";
-import { useMutation } from "react-query";
 
-interface TProfilePageProps<T> {
-  session: TGetSession;
-  mutationFn: T;
-}
+type ProfilePageProps = {
+  user: TGetUser;
+};
 
-export function ProfileInfoForm(props: TProfilePageProps<TUpdateProfileFn>) {
+export function ProfileInfoForm(props: ProfilePageProps) {
   const form = useForm<TUpdateProfileSchema>({
     defaultValues: {
-      fullName: props.session?.user?.fullName ?? "",
-      phoneNumber: props.session?.user?.phoneNumber ?? "",
+      fullName: props.user?.fullName ?? "",
+      phoneNumber: props.user?.phoneNumber ?? "",
     },
   });
 
   const { toast } = useToast();
-  const mutation = useMutation({
-    mutationFn: props.mutationFn,
-    onSuccess: (data, variables) => {
-      if (data.status === "success") {
-        toast({
-          title: "Profile Updated",
-          description: "Your profile has been updated",
-          variant: "success",
-        });
-        form.reset(variables);
-      } else {
-        handleActionError(data, {
-          setFormError: form.setError,
-          message: {
-            validation: (message) =>
-              toast({
-                title: "Validation Error",
-                description: message,
-                variant: "warning",
-              }),
-          },
-        });
-      }
+  const action = useAction(updateProfile, {
+    onSuccess: (_, input) => {
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been updated",
+        variant: "success",
+      });
+      form.reset(formDataToObject(input));
     },
+    onError: handleActionError(
+      toast,
+      form.setError,
+      "Could not update profile"
+    ),
   });
+
   return (
     <Form {...form}>
       <form
         className=" w-full"
-        onSubmit={form.handleSubmit((data) => mutation.mutate(data))}
+        onSubmit={form.handleSubmit((data) =>
+          action.execute(objectToFormData(data))
+        )}
       >
         <Card>
           <CardHeader>
@@ -88,7 +84,7 @@ export function ProfileInfoForm(props: TProfilePageProps<TUpdateProfileFn>) {
               <Label required>Email</Label>
 
               <Input
-                value={props.session?.user?.email ?? ""}
+                value={props.user?.email ?? ""}
                 placeholder="yourname@example.com"
                 type="email"
                 inputMode="email"
@@ -129,7 +125,7 @@ export function ProfileInfoForm(props: TProfilePageProps<TUpdateProfileFn>) {
           </CardContent>
           <CardFooter>
             <Button
-              loading={mutation.isLoading}
+              loading={action.status === "executing"}
               type="submit"
               disabled={!form.formState.isDirty}
             >
@@ -142,9 +138,7 @@ export function ProfileInfoForm(props: TProfilePageProps<TUpdateProfileFn>) {
   );
 }
 
-export function ProfileChangePasswordForm(
-  props: TProfilePageProps<TUpdatePasswordFn>
-) {
+export function ProfileChangePasswordForm(props: ProfilePageProps) {
   const form = useForm<TUpdatePasswordSchema>({
     defaultValues: {
       password: "",
@@ -153,39 +147,32 @@ export function ProfileChangePasswordForm(
   });
 
   const { toast } = useToast();
-  const mutation = useMutation({
-    mutationFn: props.mutationFn,
-    onSuccess: (data) => {
-      if (data.status === "success") {
-        toast({
-          title: "Password Updated",
-          description: "Your password has been updated",
-          variant: "success",
-        });
-        form.reset({
-          password: "",
-          confirmPassword: "",
-        });
-      } else {
-        handleActionError(data, {
-          setFormError: form.setError,
-          message: {
-            validation: (message) =>
-              toast({
-                title: "Validation Error",
-                description: message,
-                variant: "warning",
-              }),
-          },
-        });
-      }
+  const action = useAction(updatePassword, {
+    onSuccess: () => {
+      toast({
+        title: "Password Updated",
+        description: "Your password has been updated",
+        variant: "success",
+      });
+      form.reset({
+        password: "",
+        confirmPassword: "",
+      });
     },
+    onError: handleActionError(
+      toast,
+      form.setError,
+      "Could not update password"
+    ),
   });
+
   return (
     <Form {...form}>
       <form
         className=" w-full"
-        onSubmit={form.handleSubmit((data) => mutation.mutate(data))}
+        onSubmit={form.handleSubmit((data) =>
+          action.execute(objectToFormData(data))
+        )}
       >
         <Card>
           <CardHeader>
@@ -221,7 +208,7 @@ export function ProfileChangePasswordForm(
           </CardContent>
           <CardFooter>
             <Button
-              loading={mutation.isLoading}
+              loading={action.status === "executing"}
               type="submit"
               disabled={!form.formState.isDirty}
             >
@@ -234,7 +221,7 @@ export function ProfileChangePasswordForm(
   );
 }
 
-export function ProfileAvatarForm(props: TProfilePageProps<TUpdateAvatarFn>) {
+export function ProfileAvatarForm(props: ProfilePageProps) {
   const form = useForm<TUpdateAvatarSchema>({
     defaultValues: {
       avatar: null,
@@ -243,47 +230,28 @@ export function ProfileAvatarForm(props: TProfilePageProps<TUpdateAvatarFn>) {
   const avatar = form.watch("avatar");
 
   const { toast } = useToast();
-  const mutation = useMutation({
-    mutationFn: props.mutationFn,
-    onSuccess: (data) => {
-      if (data.status === "success") {
-        toast({
-          title: "Avatar Updated",
-          description: "Your avatar has been updated",
-          variant: "success",
-        });
-        form.reset({
-          avatar: null,
-        });
-      } else {
-        handleActionError(data, {
-          setFormError: form.setError,
-          message: {
-            validation: (message) =>
-              toast({
-                title: "Validation Error",
-                description: message,
-                variant: "warning",
-              }),
-          },
-        });
-      }
+  const action = useAction(updateAvatar, {
+    onSuccess: () => {
+      toast({
+        title: "Avatar Updated",
+        description: "Your avatar has been updated",
+        variant: "success",
+      });
+      form.reset({
+        avatar: null,
+      });
     },
+    onError: handleActionError(toast, form.setError, "Could not update avatar"),
   });
 
-  const avatarUrl = useFileUploadUrl(
-    avatar,
-    props.session?.user?.avatarUrl ?? ""
-  );
+  const avatarUrl = useFileUploadUrl(avatar, props.user?.avatarUrl ?? "");
   return (
     <Form {...form}>
       <form
         className="w-full"
-        onSubmit={form.handleSubmit((data) => {
-          const formData = new FormData();
-          if (data.avatar) formData.append("avatar", data.avatar as File);
-          mutation.mutate(formData);
-        })}
+        onSubmit={form.handleSubmit((data) =>
+          action.execute(objectToFormData(data))
+        )}
       >
         <Card>
           <CardHeader>
@@ -300,7 +268,7 @@ export function ProfileAvatarForm(props: TProfilePageProps<TUpdateAvatarFn>) {
                     <Avatar className="w-20 h-20">
                       <AvatarImage src={avatarUrl} />
                       <AvatarFallback className="text-xl">
-                        {getNamePrefix(props.session?.user?.fullName ?? "")}
+                        {getNamePrefix(props.user?.fullName ?? "")}
                       </AvatarFallback>
                     </Avatar>
                     <FormControl>
@@ -319,17 +287,15 @@ export function ProfileAvatarForm(props: TProfilePageProps<TUpdateAvatarFn>) {
           </CardContent>
           <CardFooter className="space-x-3">
             <Button
-              loading={mutation.isLoading && form.formState.isDirty}
+              loading={action.status === "executing" && form.formState.isDirty}
               disabled={!form.formState.isDirty}
             >
               Upload
             </Button>
             <Button
               variant="destructive"
-              loading={mutation.isLoading && !form.formState.isDirty}
-              disabled={
-                !props.session.user?.avatarUrl || form.formState.isDirty
-              }
+              loading={action.status === "executing" && !form.formState.isDirty}
+              disabled={!props.user?.avatarUrl || form.formState.isDirty}
             >
               Remove
             </Button>

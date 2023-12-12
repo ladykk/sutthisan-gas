@@ -17,15 +17,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { handleActionError } from "@/lib/actions";
-import { TSignInFn, TSignInSchema } from "@/server/actions/auth";
+import { TSignInSchema, signIn } from "@/server/actions/auth";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useMutation } from "react-query";
+import { useAction } from "next-safe-action/hook";
+import { handleActionError, objectToFormData } from "@/lib/actions";
+import { useToast } from "@/components/ui/use-toast";
 
 type TSignInClientProps = {
-  mutationFn: TSignInFn;
   allowSignup: boolean;
 };
 
@@ -36,34 +37,22 @@ export default function SignInClient(props: TSignInClientProps) {
       password: "",
     },
   });
+  const { toast } = useToast();
   const router = useRouter();
-  const mutation = useMutation({
-    mutationFn: props.mutationFn,
-    onSuccess: (data) => {
-      if (data.status === "success") {
-        router.push("/");
-      } else {
-        handleActionError(data, {
-          setFormError: form.setError,
-          message: {
-            unauthorized: (message) => {
-              form.setError("email", {
-                message: " ",
-              });
-              form.setError("password", {
-                message: message,
-              });
-            },
-          },
-        });
-      }
+  const action = useAction(signIn, {
+    onSuccess: () => {
+      router.push("/");
     },
+    onError: handleActionError(toast, form.setError, "Could not sign in."),
   });
+
   return (
     <Form {...form}>
       <form
         className="max-w-lg w-full"
-        onSubmit={form.handleSubmit((data) => mutation.mutate(data))}
+        onSubmit={form.handleSubmit((data) =>
+          action.execute(objectToFormData(data))
+        )}
       >
         <Card>
           <CardHeader>
@@ -104,7 +93,7 @@ export default function SignInClient(props: TSignInClientProps) {
             />
           </CardContent>
           <CardFooter>
-            <Button type="submit" loading={mutation.isLoading}>
+            <Button type="submit" loading={action.status === "executing"}>
               Sign In
             </Button>
             {props.allowSignup && (
