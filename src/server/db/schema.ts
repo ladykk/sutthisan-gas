@@ -1,3 +1,4 @@
+import { RolesId } from "@/static/auth";
 import {
   pgTable,
   unique,
@@ -5,6 +6,7 @@ import {
   uuid,
   timestamp,
   text,
+  primaryKey,
 } from "drizzle-orm/pg-core";
 
 export const keyStatus = pgEnum("key_status", [
@@ -51,6 +53,22 @@ export const profiles = pgTable(
   (table) => {
     return {
       profilesEmailKey: unique("profiles_email_key").on(table.email),
+    };
+  }
+);
+
+export const roles = pgEnum("roles", RolesId);
+export const userRoles = pgTable(
+  "user_roles",
+  {
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => profiles.id),
+    role: roles("role").notNull(),
+  },
+  (table) => {
+    return {
+      pk: primaryKey({ columns: [table.userId, table.role] }),
     };
   }
 );

@@ -20,11 +20,11 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { handleActionError, objectToFormData } from "@/lib/actions";
 import { TSignUpSchema, signUp } from "@/server/actions/auth";
-import { useAction } from "next-safe-action/hook";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
+import { useSearchParams } from "@/lib/url";
 
 export default function SignUpClient() {
   const form = useForm<TSignUpSchema>({
@@ -38,15 +38,25 @@ export default function SignUpClient() {
   });
 
   const { toast } = useToast();
+  const searchParams = useSearchParams({
+    callbackUrl: "",
+  });
   const router = useRouter();
-  const action = useAction(signUp, {
+  const mutation = useMutation({
+    mutationFn: signUp,
     onSuccess: () => {
       toast({
         title: "Account created.",
         description: "Your account has been created.",
         variant: "success",
       });
-      router.push("/auth/signin");
+      router.push(
+        `/auth/signin${
+          searchParams.get("callbackUrl")
+            ? `?callbackUrl=${searchParams.get("callbackUrl")}`
+            : ""
+        }`
+      );
     },
     onError: handleActionError(toast, form.setError, "Could not sign up."),
   });
@@ -56,7 +66,7 @@ export default function SignUpClient() {
       <form
         className="max-w-lg w-full"
         onSubmit={form.handleSubmit((data) =>
-          action.execute(objectToFormData(data))
+          mutation.mutate(objectToFormData(data))
         )}
       >
         <Card>
@@ -141,11 +151,15 @@ export default function SignUpClient() {
             />
           </CardContent>
           <CardFooter>
-            <Button loading={action.status === "executing"} type="submit">
+            <Button loading={mutation.isPending} type="submit">
               Sign Up
             </Button>
             <Link
-              href="/auth/signin"
+              href={`/auth/signin${
+                searchParams.get("callbackUrl")
+                  ? `?callbackUrl=${searchParams.get("callbackUrl")}`
+                  : ""
+              }`}
               className={buttonVariants({
                 variant: "link",
               })}

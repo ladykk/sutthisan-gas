@@ -1,6 +1,11 @@
 import { createEnv } from "@t3-oss/env-core";
 import { z } from "zod";
+import {
+  NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  NEXT_PUBLIC_SUPABASE_URL,
+} from "./lib/supabase";
 export const env = createEnv({
+  isServer: typeof window === "undefined",
   server: {
     DATABASE_URL: z.string().url(),
     EDGE_CONFIG: z.string().url(),
@@ -12,6 +17,10 @@ export const env = createEnv({
     NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
     NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
   },
-  runtimeEnv: process.env,
+  runtimeEnv: {
+    ...process.env,
+    NEXT_PUBLIC_SUPABASE_URL: NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  },
   emptyStringAsUndefined: true,
 });

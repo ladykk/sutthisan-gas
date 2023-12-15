@@ -1,5 +1,4 @@
 "use client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -24,7 +23,6 @@ import {
   handleActionError,
   objectToFormData,
 } from "@/lib/actions";
-import { getNamePrefix } from "@/lib/auth";
 import {
   TGetUser,
   TUpdateAvatarSchema,
@@ -35,8 +33,9 @@ import {
   updateProfile,
 } from "@/server/actions/auth";
 import { IMAGE_MIME_TYPES } from "@/server/zod";
-import { useAction } from "next-safe-action/hook";
 import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
+import { AuthAvatar } from "@/components/common/auth";
 
 type ProfilePageProps = {
   user: TGetUser;
@@ -51,7 +50,8 @@ export function ProfileInfoForm(props: ProfilePageProps) {
   });
 
   const { toast } = useToast();
-  const action = useAction(updateProfile, {
+  const mutation = useMutation({
+    mutationFn: updateProfile,
     onSuccess: (_, input) => {
       toast({
         title: "Profile Updated",
@@ -72,7 +72,7 @@ export function ProfileInfoForm(props: ProfilePageProps) {
       <form
         className=" w-full"
         onSubmit={form.handleSubmit((data) =>
-          action.execute(objectToFormData(data))
+          mutation.mutate(objectToFormData(data))
         )}
       >
         <Card>
@@ -125,7 +125,7 @@ export function ProfileInfoForm(props: ProfilePageProps) {
           </CardContent>
           <CardFooter>
             <Button
-              loading={action.status === "executing"}
+              loading={mutation.isPending}
               type="submit"
               disabled={!form.formState.isDirty}
             >
@@ -147,7 +147,8 @@ export function ProfileChangePasswordForm(props: ProfilePageProps) {
   });
 
   const { toast } = useToast();
-  const action = useAction(updatePassword, {
+  const mutation = useMutation({
+    mutationFn: updatePassword,
     onSuccess: () => {
       toast({
         title: "Password Updated",
@@ -171,7 +172,7 @@ export function ProfileChangePasswordForm(props: ProfilePageProps) {
       <form
         className=" w-full"
         onSubmit={form.handleSubmit((data) =>
-          action.execute(objectToFormData(data))
+          mutation.mutate(objectToFormData(data))
         )}
       >
         <Card>
@@ -208,7 +209,7 @@ export function ProfileChangePasswordForm(props: ProfilePageProps) {
           </CardContent>
           <CardFooter>
             <Button
-              loading={action.status === "executing"}
+              loading={mutation.isPending}
               type="submit"
               disabled={!form.formState.isDirty}
             >
@@ -230,7 +231,8 @@ export function ProfileAvatarForm(props: ProfilePageProps) {
   const avatar = form.watch("avatar");
 
   const { toast } = useToast();
-  const action = useAction(updateAvatar, {
+  const mutation = useMutation({
+    mutationFn: updateAvatar,
     onSuccess: () => {
       toast({
         title: "Avatar Updated",
@@ -250,7 +252,7 @@ export function ProfileAvatarForm(props: ProfilePageProps) {
       <form
         className="w-full"
         onSubmit={form.handleSubmit((data) =>
-          action.execute(objectToFormData(data))
+          mutation.mutate(objectToFormData(data))
         )}
       >
         <Card>
@@ -265,12 +267,11 @@ export function ProfileAvatarForm(props: ProfilePageProps) {
                 <FormItem>
                   <FormLabel required>Avatar</FormLabel>
                   <div className="flex gap-3 items-center justify-center">
-                    <Avatar className="w-20 h-20">
-                      <AvatarImage src={avatarUrl} />
-                      <AvatarFallback className="text-xl">
-                        {getNamePrefix(props.user?.fullName ?? "")}
-                      </AvatarFallback>
-                    </Avatar>
+                    <AuthAvatar
+                      src={avatarUrl}
+                      fullName={props.user?.fullName ?? ""}
+                      className="w-20 h-20"
+                    />
                     <FormControl>
                       <FileUpload
                         {...field}
@@ -287,14 +288,14 @@ export function ProfileAvatarForm(props: ProfilePageProps) {
           </CardContent>
           <CardFooter className="space-x-3">
             <Button
-              loading={action.status === "executing" && form.formState.isDirty}
+              loading={mutation.isPending && form.formState.isDirty}
               disabled={!form.formState.isDirty}
             >
               Upload
             </Button>
             <Button
               variant="destructive"
-              loading={action.status === "executing" && !form.formState.isDirty}
+              loading={mutation.isPending && !form.formState.isDirty}
               disabled={!props.user?.avatarUrl || form.formState.isDirty}
             >
               Remove

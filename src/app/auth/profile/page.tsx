@@ -7,12 +7,20 @@ import {
   ProfileInfoForm,
 } from "./client";
 
+import { getAuthErrorUrl } from "@/lib/url";
+import { getCallbackUrl } from "@/lib/headers";
+import { redirect } from "next/navigation";
+
 export const metadata = {
   title: `Manage Profile | ${env.NEXT_PUBLIC_ORGANIZATION_NAME}`,
 };
 
 export default async function ProfilePage() {
   const user = await getUser();
+
+  if (!user.data)
+    return redirect(getAuthErrorUrl("NoSession", getCallbackUrl()));
+
   return (
     <div className="bg-muted min-h-screen">
       <div className="max-w-7xl mx-auto">

@@ -21,10 +21,10 @@ import { TSignInSchema, signIn } from "@/server/actions/auth";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { useMutation } from "react-query";
-import { useAction } from "next-safe-action/hook";
+import { useMutation } from "@tanstack/react-query";
 import { handleActionError, objectToFormData } from "@/lib/actions";
 import { useToast } from "@/components/ui/use-toast";
+import { useSearchParams } from "@/lib/url";
 
 type TSignInClientProps = {
   allowSignup: boolean;
@@ -38,10 +38,14 @@ export default function SignInClient(props: TSignInClientProps) {
     },
   });
   const { toast } = useToast();
+  const searchParams = useSearchParams({
+    callbackUrl: "",
+  });
   const router = useRouter();
-  const action = useAction(signIn, {
+  const mutation = useMutation({
+    mutationFn: signIn,
     onSuccess: () => {
-      router.push("/");
+      router.push(searchParams.get("callbackUrl") || "/");
     },
     onError: handleActionError(toast, form.setError, "Could not sign in."),
   });
@@ -51,7 +55,7 @@ export default function SignInClient(props: TSignInClientProps) {
       <form
         className="max-w-lg w-full"
         onSubmit={form.handleSubmit((data) =>
-          action.execute(objectToFormData(data))
+          mutation.mutate(objectToFormData(data))
         )}
       >
         <Card>
@@ -93,12 +97,16 @@ export default function SignInClient(props: TSignInClientProps) {
             />
           </CardContent>
           <CardFooter>
-            <Button type="submit" loading={action.status === "executing"}>
+            <Button type="submit" loading={mutation.isPending}>
               Sign In
             </Button>
             {props.allowSignup && (
               <Link
-                href="/auth/signup"
+                href={`/auth/signup${
+                  searchParams.get("callbackUrl")
+                    ? `?callbackUrl=${searchParams.get("callbackUrl")}`
+                    : ""
+                }`}
                 className={buttonVariants({
                   variant: "link",
                 })}

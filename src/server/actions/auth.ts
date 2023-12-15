@@ -9,12 +9,13 @@ import {
   zodPhoneNumber,
 } from "../zod";
 import { z } from "zod";
-import { action, authAction } from ".";
+import { ReturnSafeActionData, action, authAction } from ".";
 import { SBServerClient } from "../supabase";
 import { cookies } from "next/headers";
 import { CURRENT_TIMESTAMP, db } from "../db";
 import { profiles } from "../db/schema";
 import { eq } from "drizzle-orm";
+import { AVATAR_BUCKET } from "../db/storage";
 
 // Sign In
 const signInSchema = zfd.formData({
@@ -116,19 +117,15 @@ export const getUser = authAction(z.void(), async (_, ctx) => {
   const { data } = await supabase.auth.getSession();
   if (!data.session)
     throw new Error("Cannot find session. Please sign in again.");
-  let user = await db.query.profiles.findFirst({
+  const user = await db.query.profiles.findFirst({
     where: ({ id }, { eq }) => eq(id, data?.session?.user.id ?? ""),
   });
   if (!user) throw new Error("Cannot find user.");
-  user.avatarUrl = user?.avatarUrl
-    ? supabase.storage.from("avatars").getPublicUrl(user.avatarUrl).data
-        .publicUrl
-    : null;
 
   return { ...user, session: ctx.auth };
 });
 
-export type TGetUser = Awaited<ReturnType<typeof getUser>>["data"];
+export type TGetUser = ReturnSafeActionData<typeof getUser>;
 
 // Update Profile
 const updateProfileSchema = zfd.formData({
@@ -224,7 +221,7 @@ export const updateAvatar = authAction(
     const supabase = SBServerClient(cookies());
     // Remove previous avatar
     if (user.avatarUrl) {
-      await supabase.storage.from("avatars").remove([user.avatarUrl]);
+      await supabase.storage.from(AVATAR_BUCKET).remove([user.avatarUrl]);
       await supabase.auth.updateUser({ data: { avatarUrl: null } });
       await db
         .update(profiles)
@@ -235,7 +232,7 @@ export const updateAvatar = authAction(
     // Upload avatar
     if (inputs.avatar) {
       const { data, error } = await supabase.storage
-        .from("avatars")
+        .from(AVATAR_BUCKET)
         .upload(`${user.id}/${inputs.avatar.name}`, inputs.avatar);
       if (error) throw error;
       await supabase.auth.updateUser({ data: { avatarUrl: data.path } });

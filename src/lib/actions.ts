@@ -1,7 +1,8 @@
 import { ToastFn } from "@/components/ui/use-toast";
+import { SafeAction } from "next-safe-action";
 import { HookResult } from "next-safe-action/hook";
 import { Path, UseFormSetError } from "react-hook-form";
-import { z } from "zod";
+import { ZodTypeAny, z } from "zod";
 import { formData } from "zod-form-data";
 
 type TFormDataInput = ReturnType<typeof formData>["_input"];
@@ -61,5 +62,22 @@ export function handleActionError<Schema extends z.ZodTypeAny, Data>(
         variant: "destructive",
       });
     }
+  };
+}
+
+export function actionQuery<TInput extends ZodTypeAny, TOutput>(
+  action: SafeAction<TInput, TOutput>
+) {
+  return async (inputs: z.infer<TInput>) => {
+    const result = await action(inputs);
+    if (result.validationError)
+      throw {
+        validationError: result.validationError,
+      };
+    else if (result.serverError)
+      throw {
+        serverError: result.serverError,
+      };
+    else return result.data;
   };
 }
