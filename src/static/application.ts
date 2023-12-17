@@ -1,25 +1,28 @@
-export const ApplicationsId = ["Backoffice"] as const;
+import { TRoleId } from "./auth";
 
-export type TApplicationId = (typeof ApplicationsId)[number];
+export const APPLICATION_ID_ARRAY = ["Backoffice"] as const;
+export type TApplicationId = (typeof APPLICATION_ID_ARRAY)[number];
+export type TApplication = {
+  id: TApplicationId;
+  label: string;
+  description: string;
+  colorCode: string;
+  roles: TRoleId[];
+};
 
-export const Applications = ApplicationsId.reduce((acc, id) => {
+export const APPLICATION_LIST: Record<TApplicationId, TApplication> = {
+  Backoffice: {
+    id: "Backoffice",
+    label: "Backoffice",
+    description: "An application for managing the system administration.",
+    colorCode: "#000000",
+    roles: ["Administrator"],
+  },
+} as const;
+
+export const Applications = APPLICATION_ID_ARRAY.reduce((acc, id) => {
   acc[id] = id;
   return acc;
 }, {} as Record<TApplicationId, TApplicationId>);
 
-export const ApplicationsList: Record<
-  TApplicationId,
-  {
-    id: TApplicationId;
-    label: string;
-    description: string;
-    colorCode: string;
-  }
-> = {
-  Backoffice: {
-    id: "Backoffice",
-    label: "Backoffice",
-    description: "Backoffice",
-    colorCode: "#000000",
-  },
-};
+export const APPLICATION_ARRAY = Object.values(APPLICATION_LIST);

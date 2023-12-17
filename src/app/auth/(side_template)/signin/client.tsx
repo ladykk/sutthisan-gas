@@ -30,6 +30,10 @@ type TSignInClientProps = {
   allowSignup: boolean;
 };
 
+const searchParamsSchema = {
+  callbackUrl: "",
+};
+
 export default function SignInClient(props: TSignInClientProps) {
   const form = useForm<TSignInSchema>({
     defaultValues: {
@@ -38,9 +42,7 @@ export default function SignInClient(props: TSignInClientProps) {
     },
   });
   const { toast } = useToast();
-  const searchParams = useSearchParams({
-    callbackUrl: "",
-  });
+  const searchParams = useSearchParams(searchParamsSchema);
   const router = useRouter();
   const mutation = useMutation({
     mutationFn: signIn,

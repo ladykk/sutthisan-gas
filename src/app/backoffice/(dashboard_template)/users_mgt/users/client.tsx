@@ -66,7 +66,7 @@ import {
   grantRoleBackoffice,
   revokeRoleBackoffice,
 } from "@/server/actions/user";
-import { RolesId, RolesList } from "@/static/auth";
+import { ROLE_ID_ARRAY, ROLE_LIST } from "@/static/auth";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Network } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -82,15 +82,15 @@ export default function BackofficeUserMgtUsersClient() {
   const query = useQuery({
     queryKey: [
       "users",
-      `page:${searchParams.get<number>("page")}`,
-      `itemsPerPage:${searchParams.get<number>("itemsPerPage")}`,
-      `search:${searchParams.get<string>("search")}`,
+      `page:${searchParams.get("page")}`,
+      `itemsPerPage:${searchParams.get("itemsPerPage")}`,
+      `search:${searchParams.get("search")}`,
     ],
     queryFn: () =>
       actionQuery(getPaginateUsers)({
-        search: searchParams.get<string>("search"),
-        page: searchParams.get<number>("page"),
-        itemsPerPage: searchParams.get<number>("itemsPerPage"),
+        search: searchParams.get("search"),
+        page: searchParams.get("page"),
+        itemsPerPage: searchParams.get("itemsPerPage"),
       }),
   });
 
@@ -99,9 +99,7 @@ export default function BackofficeUserMgtUsersClient() {
       <LayoutHeadContainer
         left={
           <>
-            <LayoutTitle>
-              Users {query.data ? `(${query.data.count})` : ""}
-            </LayoutTitle>
+            <LayoutTitle>Users</LayoutTitle>
             {query.isFetching && <Spinner />}
           </>
         }
@@ -175,9 +173,9 @@ export default function BackofficeUserMgtUsersClient() {
         currentPage={query.data?.currentPage}
         itemsPerPage={query.data?.itemsPerPage}
         totalPages={query.data?.totalPages}
-        onPageChange={(page) => searchParams.set("page", `${page}`)}
+        onPageChange={(page) => searchParams.set("page", page)}
         onItemsPerPageChange={(itemsPerPage) =>
-          searchParams.set("itemsPerPage", `${itemsPerPage}`)
+          searchParams.set("itemsPerPage", itemsPerPage)
         }
       />
     </>
@@ -189,7 +187,7 @@ const SearchSection = () => {
     search: "",
   });
   const [currentSearch, setCurrentSearch] = useDebounce(
-    searchParams.get<string>("search"),
+    searchParams.get("search"),
     (value) =>
       value.length > 0
         ? searchParams.set("search", value)
@@ -256,7 +254,7 @@ function UserRoleManagement(props: UserRoleManagementProps) {
   });
 
   const availableRoles = useMemo(
-    () => RolesId.filter((role) => !query.data?.includes(role)),
+    () => ROLE_ID_ARRAY.filter((role) => !query.data?.includes(role)),
     [query.data]
   );
 
@@ -297,9 +295,9 @@ function UserRoleManagement(props: UserRoleManagementProps) {
                     <AlertDialogTrigger>
                       <Badge
                         className="hover:cursor-pointer hover:line-through"
-                        style={{ backgroundColor: RolesList[role].colorCode }}
+                        style={{ backgroundColor: ROLE_LIST[role].colorCode }}
                       >
-                        {RolesList[role].label}
+                        {ROLE_LIST[role].label}
                       </Badge>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
@@ -308,7 +306,7 @@ function UserRoleManagement(props: UserRoleManagementProps) {
                           Are you sure you want to revoke this role?
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                          Role: {RolesList[role].label} (id: {role}) will be
+                          Role: {ROLE_LIST[role].label} (id: {role}) will be
                           revoked from {props.user.fullName} (id:{" "}
                           {props.user.id}) and cannot be undone.
                         </AlertDialogDescription>
@@ -360,7 +358,7 @@ function UserRoleManagement(props: UserRoleManagementProps) {
                         <SelectContent>
                           {availableRoles.map((role) => (
                             <SelectItem key={role} value={role}>
-                              {RolesList[role].label}
+                              {ROLE_LIST[role].label}
                             </SelectItem>
                           ))}
                         </SelectContent>

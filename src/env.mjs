@@ -9,6 +9,10 @@ export const env = createEnv({
   server: {
     DATABASE_URL: z.string().url(),
     EDGE_CONFIG: z.string().url(),
+    VERCEL_TOKEN: z.string(),
+    EDGE_CONFIG_ID: z.string(),
+    EDGE_CONFIG: z.string(),
+    VERCEL_TEAM_ID: z.string(),
   },
   clientPrefix: "NEXT_PUBLIC_",
   client: {

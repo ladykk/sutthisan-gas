@@ -50,7 +50,7 @@ export function LayoutBackOffice(props: LayoutBackOfficeProps) {
       />
       <div
         className={cn(
-          "p-5 flex-1 transition-transform xl:ml-[300px]",
+          "p-5 flex-1 transition-transform xl:ml-[300px] flex flex-col",
           isSidebarOpen
             ? "translate-x-[300px] xl:translate-x-[0]"
             : "translate-x-0"

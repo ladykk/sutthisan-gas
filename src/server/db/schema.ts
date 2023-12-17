@@ -1,4 +1,4 @@
-import { RolesId } from "@/static/auth";
+import { ROLE_ID_ARRAY } from "@/static/auth";
 import {
   pgTable,
   unique,
@@ -57,7 +57,7 @@ export const profiles = pgTable(
   }
 );
 
-export const roles = pgEnum("roles", RolesId);
+export const roles = pgEnum("roles", ROLE_ID_ARRAY);
 export const userRoles = pgTable(
   "user_roles",
   {

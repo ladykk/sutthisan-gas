@@ -7,10 +7,10 @@ import {
   roleAction,
   roleMiddleware,
 } from ".";
-import { Roles, RolesId, TRoleId } from "@/static/auth";
+import { Roles, ROLE_ID_ARRAY, TRoleId } from "@/static/auth";
 import { db } from "../db";
 import { desc, like, or, sql } from "drizzle-orm";
-import { profiles } from "../db/schema";
+import { profiles, userRoles } from "../db/schema";
 import { zfd } from "zod-form-data";
 import { grantRole, revokeRole } from "../functions/user";
 
@@ -100,7 +100,7 @@ const grantRoleBackofficeSchema = zfd.formData({
       required_error: "User id is required",
     })
   ),
-  role: zfd.text(z.enum(RolesId)),
+  role: zfd.text(z.enum(ROLE_ID_ARRAY)),
 });
 
 export type TGrantRoleBackofficeSchema = z.infer<
@@ -123,7 +123,7 @@ const revokeRoleBackofficeSchema = zfd.formData({
       required_error: "User id is required",
     })
   ),
-  role: zfd.text(z.enum(RolesId)),
+  role: zfd.text(z.enum(ROLE_ID_ARRAY)),
 });
 
 export type TRevokeRoleBackofficeSchema = z.infer<
@@ -140,7 +140,7 @@ export const revokeRoleBackoffice = roleAction([Roles.Administrator])(
 );
 
 // Check Role
-const checkRoleSchema = z.array(z.enum(RolesId));
+const checkRoleSchema = z.array(z.enum(ROLE_ID_ARRAY));
 
 export type TCheckRoleSchema = z.infer<typeof checkRoleSchema>;
 
@@ -148,3 +148,19 @@ export const checkRole = authAction(checkRoleSchema, async (input, ctx) => {
   const role = await roleMiddleware(input, ctx.auth.user.id);
   return !!role;
 });
+
+// Get Roles' User count
+export const getRolesUserCount = roleAction([Roles.Administrator])(
+  z.void(),
+  async (input) => {
+    const result = await db
+      .select({
+        role: userRoles.role,
+        count: sql<number>`cast(count(${userRoles.userId}) as int)`,
+      })
+      .from(userRoles)
+      .groupBy(userRoles.role);
+
+    return result;
+  }
+);

@@ -1,5 +1,5 @@
+import { getEdgeConfig } from "@/server/edge-config";
 import SignInClient from "./client";
-import { getAllowSignUp } from "@/server/edge-config";
 import { env } from "@/env.mjs";
 
 export const metadata = {
@@ -7,7 +7,7 @@ export const metadata = {
 };
 
 export default async function SignInPage() {
-  const allowSignUp = await getAllowSignUp();
+  const allowSignUp = await getEdgeConfig("allowSignUp");
   return (
     <div className="flex justify-center items-center flex-1">
       <SignInClient allowSignup={allowSignUp} />
