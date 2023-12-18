@@ -1,46 +1,39 @@
+"use client";
 import {
   LayoutHeadContainer,
   LayoutTitle,
 } from "@/components/backoffice/theme";
 import { Badge } from "@/components/ui/badge";
 import { DataTable } from "@/components/ui/data-table";
-import { Spinner } from "@/components/ui/spinner";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { actionQuery } from "@/lib/actions";
-import { getRolesUserCount } from "@/server/actions/user";
 import {
+  APPLICATION_ARRAY,
   APPLICATION_LIST,
   getApplicationsByRoleId,
 } from "@/static/application";
-import { ROLE_ARRAY } from "@/static/auth";
-import { useQuery } from "@tanstack/react-query";
+import { ROLE_ARRAY, ROLE_LIST } from "@/static/auth";
 
-export default function BackofficeUsersMgtRolesClient() {
-  const query = useQuery({
-    queryKey: ["rolesUserCount"],
-    queryFn: () => actionQuery(getRolesUserCount)(),
-  });
+export default function BackofficeSystemPreferencesApplicationPage() {
   return (
     <>
       <LayoutHeadContainer
         left={
           <>
-            <LayoutTitle>Roles</LayoutTitle>
-            {query.isFetching && <Spinner />}
+            <LayoutTitle>Applications</LayoutTitle>
           </>
         }
       />
       <DataTable
-        data={ROLE_ARRAY}
+        data={APPLICATION_ARRAY}
         columns={[
           {
             accessorKey: "label",
-            header: "Role",
+            header: "Application",
             cell: ({ row }) => (
               <Badge style={{ backgroundColor: row.original.colorCode }}>
                 {row.original.label}
@@ -52,44 +45,34 @@ export default function BackofficeUsersMgtRolesClient() {
             header: "Description",
           },
           {
-            id: "applications",
-            header: "Applications",
+            id: "roles",
+            header: "Roles",
             cell: ({ row }) => {
-              const applications = getApplicationsByRoleId(row.original.id);
-
-              if (applications.length === 0) return "-";
+              if (row.original.roles.length === 0) return "-";
 
               return (
                 <TooltipProvider>
                   <div className="flex gap-3 flex-wrap">
-                    {applications.map((id) => (
+                    {row.original.roles.map((id) => (
                       <Tooltip>
                         <TooltipTrigger>
                           <Badge
                             key={id}
                             style={{
-                              backgroundColor: APPLICATION_LIST[id].colorCode,
+                              backgroundColor: ROLE_LIST[id].colorCode,
                             }}
                           >
-                            {APPLICATION_LIST[id].label}
+                            {ROLE_LIST[id].label}
                           </Badge>
                         </TooltipTrigger>
                         <TooltipContent side="bottom" className="text-sm">
-                          {APPLICATION_LIST[id].description}
+                          {ROLE_LIST[id].description}
                         </TooltipContent>
                       </Tooltip>
                     ))}
                   </div>
                 </TooltipProvider>
               );
-            },
-          },
-          {
-            id: "user_count",
-            header: "Users",
-            cell: ({ row }) => {
-              const count = query.data ? query.data[row.original.id] : 0;
-              return `${count} user${count > 1 ? "s" : ""}`;
             },
           },
         ]}

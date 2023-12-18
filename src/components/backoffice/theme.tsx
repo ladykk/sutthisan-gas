@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils";
 import AuthSession from "../common/auth";
 import BackofficeSidebar from "./sidebar";
 import { TGetUser } from "@/server/actions/auth";
+import { Badge } from "../ui/badge";
+import { APPLICATION_LIST } from "@/static/application";
 
 type LayoutBackOfficeProps = {
   children: ReactNode;
@@ -34,7 +36,8 @@ export function LayoutBackOffice(props: LayoutBackOfficeProps) {
           )}
           href="/backoffice"
         >
-          {props.ORGANIZATION_NAME} Back Office
+          {props.ORGANIZATION_NAME}{" "}
+          <Badge className="ml-2">{APPLICATION_LIST.Backoffice.label}</Badge>
         </Link>
         <div className="flex-1" />
         <AuthSession user={props.user} className="mx-3" onlySession />

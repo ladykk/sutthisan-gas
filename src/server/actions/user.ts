@@ -161,6 +161,10 @@ export const getRolesUserCount = roleAction([Roles.Administrator])(
       .from(userRoles)
       .groupBy(userRoles.role);
 
-    return result;
+    return ROLE_ID_ARRAY.reduce((acc, roleId) => {
+      const role = result.find((role) => role.role === roleId);
+      acc[roleId] = role ? role.count : 0;
+      return acc;
+    }, {} as Record<TRoleId, number>);
   }
 );

@@ -20,6 +20,13 @@ export const APPLICATION_LIST: Record<TApplicationId, TApplication> = {
   },
 } as const;
 
+export const getApplicationsByRoleId = (roleId: TRoleId) => {
+  const applications = APPLICATION_ARRAY.filter((application) => {
+    return application.roles.includes(roleId);
+  });
+  return applications.map((application) => application.id);
+};
+
 export const Applications = APPLICATION_ID_ARRAY.reduce((acc, id) => {
   acc[id] = id;
   return acc;
