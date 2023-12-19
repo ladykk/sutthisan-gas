@@ -52,7 +52,7 @@ export function DashboardLayout(props: DashboardLayoutProps) {
       />
       <div
         className={cn(
-          "p-5 flex-1 transition-transform xl:ml-[300px] flex flex-col",
+          "p-5 flex-1 transition-transform xl:ml-[300px] flex flex-col bg-white/60",
           isSidebarOpen
             ? "translate-x-[300px] xl:translate-x-[0]"
             : "translate-x-0"
@@ -94,7 +94,7 @@ export default function DashboardSidebar(props: DashboardSidebarProps) {
   return (
     <div
       className={cn(
-        "bg-white fixed left-0 top-[3.5rem] bottom-0 w-[300px] overflow-x-hidden overflow-y-auto shadow-md px-3",
+        "bg-white fixed left-0 top-[3.5rem] bottom-0 w-[300px] overflow-x-hidden overflow-y-auto shadow-md px-3 border-r",
         props.className
       )}
     >

@@ -19,7 +19,7 @@ import { FileUpload, Input, useFileUploadUrl } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  formDataToObject,
+  actionMutation,
   handleActionError,
   objectToFormData,
 } from "@/lib/actions";
@@ -36,6 +36,7 @@ import { IMAGE_MIME_TYPES } from "@/server/zod";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { AuthAvatar } from "@/components/common/auth";
+import { useRouter } from "next/navigation";
 
 type ProfilePageProps = {
   user: TGetUser;
@@ -51,14 +52,14 @@ export function ProfileInfoForm(props: ProfilePageProps) {
 
   const { toast } = useToast();
   const mutation = useMutation({
-    mutationFn: updateProfile,
-    onSuccess: (_, input) => {
+    mutationFn: actionMutation(updateProfile),
+    onSuccess: (_) => {
       toast({
         title: "Profile Updated",
         description: "Your profile has been updated",
         variant: "success",
       });
-      form.reset(formDataToObject(input));
+      form.reset(form.getValues());
     },
     onError: handleActionError(
       toast,
@@ -71,9 +72,7 @@ export function ProfileInfoForm(props: ProfilePageProps) {
     <Form {...form}>
       <form
         className=" w-full"
-        onSubmit={form.handleSubmit((data) =>
-          mutation.mutate(objectToFormData(data))
-        )}
+        onSubmit={form.handleSubmit((data) => mutation.mutate(data))}
       >
         <Card>
           <CardHeader>
@@ -148,7 +147,7 @@ export function ProfileChangePasswordForm(props: ProfilePageProps) {
 
   const { toast } = useToast();
   const mutation = useMutation({
-    mutationFn: updatePassword,
+    mutationFn: actionMutation(updatePassword),
     onSuccess: () => {
       toast({
         title: "Password Updated",
@@ -171,9 +170,7 @@ export function ProfileChangePasswordForm(props: ProfilePageProps) {
     <Form {...form}>
       <form
         className=" w-full"
-        onSubmit={form.handleSubmit((data) =>
-          mutation.mutate(objectToFormData(data))
-        )}
+        onSubmit={form.handleSubmit((data) => mutation.mutate(data))}
       >
         <Card>
           <CardHeader>
@@ -229,10 +226,11 @@ export function ProfileAvatarForm(props: ProfilePageProps) {
     },
   });
   const avatar = form.watch("avatar");
+  const router = useRouter();
 
   const { toast } = useToast();
   const mutation = useMutation({
-    mutationFn: updateAvatar,
+    mutationFn: actionMutation(updateAvatar),
     onSuccess: () => {
       toast({
         title: "Avatar Updated",
@@ -246,14 +244,15 @@ export function ProfileAvatarForm(props: ProfilePageProps) {
     onError: handleActionError(toast, form.setError, "Could not update avatar"),
   });
 
+  console.log(avatar);
+
   const avatarUrl = useFileUploadUrl(avatar, props.user?.avatarUrl ?? "");
+  console.log(avatarUrl);
   return (
     <Form {...form}>
       <form
         className="w-full"
-        onSubmit={form.handleSubmit((data) =>
-          mutation.mutate(objectToFormData(data))
-        )}
+        onSubmit={form.handleSubmit((data) => mutation.mutate(data))}
       >
         <Card>
           <CardHeader>

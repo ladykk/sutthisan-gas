@@ -22,7 +22,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
-import { handleActionError, objectToFormData } from "@/lib/actions";
+import { actionMutation, handleActionError } from "@/lib/actions";
 import { useToast } from "@/components/ui/use-toast";
 import { useSearchParams } from "@/lib/url";
 
@@ -45,7 +45,7 @@ export default function SignInClient(props: TSignInClientProps) {
   const searchParams = useSearchParams(searchParamsSchema);
   const router = useRouter();
   const mutation = useMutation({
-    mutationFn: signIn,
+    mutationFn: actionMutation(signIn),
     onSuccess: () => {
       router.push(searchParams.get("callbackUrl") || "/");
     },
@@ -56,9 +56,7 @@ export default function SignInClient(props: TSignInClientProps) {
     <Form {...form}>
       <form
         className="max-w-lg w-full"
-        onSubmit={form.handleSubmit((data) =>
-          mutation.mutate(objectToFormData(data))
-        )}
+        onSubmit={form.handleSubmit((data) => mutation.mutate(data))}
       >
         <Card>
           <CardHeader>

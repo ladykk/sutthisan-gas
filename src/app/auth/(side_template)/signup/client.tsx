@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { handleActionError, objectToFormData } from "@/lib/actions";
+import { actionMutation, handleActionError } from "@/lib/actions";
 import { TSignUpSchema, signUp } from "@/server/actions/auth";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -43,8 +43,8 @@ export default function SignUpClient() {
   });
   const router = useRouter();
   const mutation = useMutation({
-    mutationFn: signUp,
-    onSuccess: () => {
+    mutationFn: actionMutation(signUp),
+    onSuccess: (data) => {
       toast({
         title: "Account created.",
         description: "Your account has been created.",
@@ -65,9 +65,7 @@ export default function SignUpClient() {
     <Form {...form}>
       <form
         className="max-w-lg w-full"
-        onSubmit={form.handleSubmit((data) =>
-          mutation.mutate(objectToFormData(data))
-        )}
+        onSubmit={form.handleSubmit((data) => mutation.mutate(data))}
       >
         <Card>
           <CardHeader>

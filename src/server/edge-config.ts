@@ -23,7 +23,7 @@ export async function getEdgeConfigs<Key extends TEdgeConfigKey>(keys: Key[]) {
   }, {} as Record<Key, TEdgeConfigValue<Key>>);
 }
 
-export async function setEdgeConfig<Key extends TEdgeConfigKey>(
+export async function setEdgesConfig<Key extends TEdgeConfigKey>(
   items: Array<{ key: Key; value: TEdgeConfigValue<Key> }>
 ) {
   return await fetch(

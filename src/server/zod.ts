@@ -14,6 +14,18 @@ export const zodPassword = z
   .min(6, { message: "Password must be at least 6 characters" })
   .max(100, { message: "Password must be less than 100 characters" });
 
+export const zodTaxId = z
+  .string()
+  .min(13, {
+    message: "Tax ID must have 13 characters",
+  })
+  .max(13, {
+    message: "Tax ID must have 13 characters",
+  })
+  .regex(/^[0-9]{13}$/, {
+    message: "Tax ID must be a number",
+  });
+
 export const zodFullName = z
   .string({
     required_error: "Full name is required",
@@ -27,7 +39,7 @@ export const zodPhoneNumber = z
   .min(9, { message: "Phone number must be at least 9 characters" })
   .max(12, { message: "Phone number must be less than 12 characters" })
   // Regrex to check if phone number is in Thai's phone number format
-  .regex(/^(0[6-9]{1}[0-9]{8})$/, {
+  .regex(/^(0[0-9]{1}[0-9]{7,8})$/, {
     message: "Invalid phone number",
   });
 

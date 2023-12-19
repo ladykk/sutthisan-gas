@@ -9,7 +9,7 @@ import { useSearchParams } from "@/lib/url";
 import { EDGE_CONFIG_GROUP_ID, TEdgeConfigGroupId } from "@/static/edge-config";
 import { SiteConfigBoolean } from "./inputs";
 
-export default function BackofficeSystemPreferencesSiteConfigClient() {
+export default function SiteConfigClient() {
   const searchParams = useSearchParams({
     group: EDGE_CONFIG_GROUP_ID[0] as TEdgeConfigGroupId,
   });
@@ -28,18 +28,16 @@ export default function BackofficeSystemPreferencesSiteConfigClient() {
         onValueChange={(value) =>
           searchParams.set("group", value as TEdgeConfigGroupId)
         }
-        className="flex-1 space-y-3 flex flex-col"
+        className="flex-1 space-y-3"
       >
-        <Card className="w-fit">
-          <TabsList>
-            {EDGE_CONFIG_GROUP_ID.map((group) => (
-              <TabsTrigger value={group} key={group}>
-                {group}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Card>
-        <Card className="p-5 pt-4 flex-1">
+        <TabsList>
+          {EDGE_CONFIG_GROUP_ID.map((group) => (
+            <TabsTrigger value={group} key={group}>
+              {group}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        <Card className="py-3 px-4">
           <TabsContent value={EDGE_CONFIG_GROUP_ID[0]}>
             <SiteConfigBoolean id="allowSignUp" />
           </TabsContent>

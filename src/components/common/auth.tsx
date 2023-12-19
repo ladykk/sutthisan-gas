@@ -10,6 +10,7 @@ import { useMutation } from "@tanstack/react-query";
 import { storage } from "@/lib/supabase";
 import { AVATAR_BUCKET } from "@/server/db/storage";
 import { Card } from "../ui/card";
+import { actionMutation } from "@/lib/actions";
 
 type AuthSessionProps = {
   user?: TGetUser;
@@ -23,7 +24,7 @@ type AuthSessionProps = {
 
 export default function AuthSession(props: AuthSessionProps) {
   const mutation = useMutation({
-    mutationFn: signOut,
+    mutationFn: actionMutation(signOut),
   });
 
   if (!props.user && props.onlySession) return null;
@@ -91,9 +92,12 @@ type AuthAvatarProps = {
 export function AuthAvatar(props: AuthAvatarProps) {
   const src = useMemo(() => {
     if (props.src)
-      return storage.from(AVATAR_BUCKET).getPublicUrl(props.src).data.publicUrl;
+      if (props.src.startsWith("blob:")) return props.src;
+      else
+        return storage.from(AVATAR_BUCKET).getPublicUrl(props.src).data
+          .publicUrl;
     else return "";
-  }, []);
+  }, [props.src]);
   return (
     <Avatar
       className={props.className}

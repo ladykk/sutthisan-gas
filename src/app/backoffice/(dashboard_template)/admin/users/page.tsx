@@ -1,13 +1,9 @@
 import {
-  LayoutHeadContainer,
-  LayoutTitle,
-} from "@/components/common/theme/dashboard";
-import {
   QueryClient,
   HydrationBoundary,
   dehydrate,
 } from "@tanstack/react-query";
-import BackofficeUserMgtUsersClient from "./client";
+import UserClient from "./client";
 import { getPaginateUsers } from "@/server/actions/user";
 import { actionQuery } from "@/lib/actions";
 
@@ -19,9 +15,7 @@ type Props = {
   };
 };
 
-export default async function BackofficeUserMgtUsersPage({
-  searchParams,
-}: Props) {
+export default async function UserPage({ searchParams }: Props) {
   const page = searchParams.page ?? 1;
   const itemsPerPage = searchParams.itemsPerPage ?? 10;
   const search = searchParams.search ?? "";
@@ -44,7 +38,7 @@ export default async function BackofficeUserMgtUsersPage({
   return (
     <>
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <BackofficeUserMgtUsersClient />
+        <UserClient />
       </HydrationBoundary>
     </>
   );

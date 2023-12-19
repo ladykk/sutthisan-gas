@@ -1,4 +1,4 @@
-import BackofficeUsersMgtRolesClient from "./client";
+import RoleClient from "./client";
 import {
   HydrationBoundary,
   QueryClient,
@@ -7,7 +7,7 @@ import {
 import { getRolesUserCount } from "@/server/actions/user";
 import { actionQuery } from "@/lib/actions";
 
-export default async function BackofficeUsersMgtRolesPage() {
+export default async function RolePage() {
   const queryClient = new QueryClient();
   await queryClient.prefetchQuery({
     queryKey: ["rolesUserCount"],
@@ -16,7 +16,7 @@ export default async function BackofficeUsersMgtRolesPage() {
   return (
     <>
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <BackofficeUsersMgtRolesClient />
+        <RoleClient />
       </HydrationBoundary>
     </>
   );

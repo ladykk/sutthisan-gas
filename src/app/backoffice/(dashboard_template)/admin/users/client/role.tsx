@@ -1,10 +1,5 @@
-"use client";
-
-import {
-  LayoutHeadContainer,
-  LayoutTitle,
-} from "@/components/common/theme/dashboard";
-import { AuthAvatar, AuthCard } from "@/components/common/auth";
+import { AuthCard } from "@/components/common/auth";
+import { RoleBadge } from "@/components/common/roles";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,13 +11,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
-import {
-  DataTable,
-  DataTableDate,
-  DataTablePagination,
-} from "@/components/ui/data-table";
 import {
   Dialog,
   DialogContent,
@@ -39,7 +28,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -51,18 +39,15 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { useToast } from "@/components/ui/use-toast";
 import {
+  actionMutation,
   actionQuery,
   handleActionError,
   objectToFormData,
 } from "@/lib/actions";
-import { useDebounce } from "@/lib/hooks";
-import { useSearchParams } from "@/lib/url";
-import { formatPhoneNumber } from "@/lib/utils";
 import {
   TGetUsers,
   TGrantRoleBackofficeSchema,
   getUserRoles,
-  getPaginateUsers,
   grantRoleBackoffice,
   revokeRoleBackoffice,
 } from "@/server/actions/user";
@@ -72,143 +57,11 @@ import { Network } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
-export default function BackofficeUserMgtUsersClient() {
-  const searchParams = useSearchParams({
-    page: 1,
-    itemsPerPage: 10,
-    search: "",
-  });
-
-  const query = useQuery({
-    queryKey: [
-      "users",
-      `page:${searchParams.get("page")}`,
-      `itemsPerPage:${searchParams.get("itemsPerPage")}`,
-      `search:${searchParams.get("search")}`,
-    ],
-    queryFn: () =>
-      actionQuery(getPaginateUsers)({
-        search: searchParams.get("search"),
-        page: searchParams.get("page"),
-        itemsPerPage: searchParams.get("itemsPerPage"),
-      }),
-  });
-
-  return (
-    <>
-      <LayoutHeadContainer
-        left={
-          <>
-            <LayoutTitle>Users</LayoutTitle>
-            {query.isFetching && <Spinner />}
-          </>
-        }
-        right={
-          <>
-            <SearchSection />
-          </>
-        }
-      />
-      <DataTable
-        data={query.data?.list}
-        columns={[
-          {
-            accessorKey: "avatarUrl",
-            header: "Avatar",
-            cell: ({ row }) => (
-              <AuthAvatar
-                src={row.original.avatarUrl}
-                fullName={row.original.fullName}
-                className="h-14 w-14"
-              />
-            ),
-          },
-          {
-            accessorKey: "email",
-            header: "Email",
-          },
-          {
-            accessorKey: "fullName",
-            header: "Full Name",
-          },
-          {
-            accessorKey: "phoneNumber",
-            header: "Phone Number",
-            cell: ({ row }) => formatPhoneNumber(row.original.phoneNumber),
-          },
-          {
-            accessorKey: "createdAt",
-            header: "Created At",
-            cell: ({ row }) => (
-              <DataTableDate
-                value={row.original.createdAt}
-                display="datetime"
-              />
-            ),
-          },
-          {
-            accessorKey: "updatedAt",
-            header: "Updated At",
-            cell: ({ row }) => (
-              <DataTableDate
-                value={row.original.updatedAt}
-                display="datetime"
-              />
-            ),
-          },
-          {
-            id: "actions",
-            header: "Actions",
-            cell: ({ row }) => (
-              <div className="space-x-3">
-                <UserRoleManagement user={row.original} />
-              </div>
-            ),
-          },
-        ]}
-      />
-      <DataTablePagination
-        className="mt-4"
-        count={query.data?.count}
-        currentPage={query.data?.currentPage}
-        itemsPerPage={query.data?.itemsPerPage}
-        totalPages={query.data?.totalPages}
-        onPageChange={(page) => searchParams.set("page", page)}
-        onItemsPerPageChange={(itemsPerPage) =>
-          searchParams.set("itemsPerPage", itemsPerPage)
-        }
-      />
-    </>
-  );
-}
-
-const SearchSection = () => {
-  const searchParams = useSearchParams({
-    search: "",
-  });
-  const [currentSearch, setCurrentSearch] = useDebounce(
-    searchParams.get("search"),
-    (value) =>
-      value.length > 0
-        ? searchParams.set("search", value)
-        : searchParams.remove("search")
-  );
-
-  return (
-    <Input
-      value={currentSearch}
-      onChange={(e) => setCurrentSearch(e.target.value)}
-      placeholder="Search by email, full name, phone number"
-      className="w-[400px]"
-    />
-  );
-};
-
 type UserRoleManagementProps = {
   user: TGetUsers["list"][0];
 };
 
-function UserRoleManagement(props: UserRoleManagementProps) {
+export function UserRoleManagement(props: UserRoleManagementProps) {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   const query = useQuery({
@@ -220,11 +73,12 @@ function UserRoleManagement(props: UserRoleManagementProps) {
   const form = useForm<TGrantRoleBackofficeSchema>({
     defaultValues: {
       userId: props.user.id,
+      role: undefined,
     },
   });
 
   const grantMutation = useMutation({
-    mutationFn: grantRoleBackoffice,
+    mutationFn: actionMutation(grantRoleBackoffice),
     onSuccess: () => {
       query.refetch();
       form.reset({
@@ -241,7 +95,7 @@ function UserRoleManagement(props: UserRoleManagementProps) {
   });
 
   const revokeMutation = useMutation({
-    mutationFn: revokeRoleBackoffice,
+    mutationFn: actionMutation(revokeRoleBackoffice),
     onSuccess: () => {
       query.refetch();
       toast({
@@ -261,7 +115,7 @@ function UserRoleManagement(props: UserRoleManagementProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="icon">
+        <Button size="icon" variant="outline">
           <Network />
         </Button>
       </DialogTrigger>
@@ -293,12 +147,7 @@ function UserRoleManagement(props: UserRoleManagementProps) {
                 query.data?.map((role) => (
                   <AlertDialog key={role}>
                     <AlertDialogTrigger>
-                      <Badge
-                        className="hover:cursor-pointer hover:line-through"
-                        style={{ backgroundColor: ROLE_LIST[role].colorCode }}
-                      >
-                        {ROLE_LIST[role].label}
-                      </Badge>
+                      <RoleBadge roleId={role} className="hover:line-through" />
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
@@ -318,9 +167,10 @@ function UserRoleManagement(props: UserRoleManagementProps) {
                             variant: "destructive",
                           })}
                           onClick={() =>
-                            revokeMutation.mutate(
-                              objectToFormData({ userId: props.user.id, role })
-                            )
+                            revokeMutation.mutate({
+                              userId: props.user.id,
+                              role,
+                            })
                           }
                         >
                           Revoke
@@ -335,9 +185,7 @@ function UserRoleManagement(props: UserRoleManagementProps) {
           {availableRoles.length > 0 && !query.isFetching && (
             <Form {...form}>
               <form
-                onSubmit={form.handleSubmit((data) =>
-                  grantMutation.mutate(objectToFormData(data))
-                )}
+                onSubmit={form.handleSubmit((data) => objectToFormData(data))}
                 className="space-y-3"
               >
                 <FormField

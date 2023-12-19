@@ -5,7 +5,6 @@ import {
   LayoutHeadContainer,
   LayoutTitle,
 } from "@/components/common/theme/dashboard";
-import { Badge } from "@/components/ui/badge";
 import { DataTable } from "@/components/ui/data-table";
 import {
   Tooltip,
@@ -13,14 +12,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  APPLICATION_ARRAY,
-  APPLICATION_LIST,
-  getApplicationsByRoleId,
-} from "@/static/application";
-import { ROLE_ARRAY, ROLE_LIST } from "@/static/auth";
+import { APPLICATION_ARRAY } from "@/static/application";
+import { ROLE_LIST } from "@/static/auth";
 
-export default function BackofficeSystemPreferencesApplicationPage() {
+export default function ApplicationPage() {
   return (
     <>
       <LayoutHeadContainer

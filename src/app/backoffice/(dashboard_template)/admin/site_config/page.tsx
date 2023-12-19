@@ -1,9 +1,9 @@
-import BackofficeSystemPreferencesSiteConfigClient from "./client";
+import SiteConfigClient from "./client";
 
-export default async function BackofficeSystemPreferencesSiteConfigPage() {
+export default async function SiteConfigPage() {
   return (
     <>
-      <BackofficeSystemPreferencesSiteConfigClient />
+      <SiteConfigClient />
     </>
   );
 }

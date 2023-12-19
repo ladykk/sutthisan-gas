@@ -22,7 +22,7 @@ import {
 import { ROLE_ARRAY } from "@/static/auth";
 import { useQuery } from "@tanstack/react-query";
 
-export default function BackofficeUsersMgtRolesClient() {
+export default function RoleClient() {
   const query = useQuery({
     queryKey: ["rolesUserCount"],
     queryFn: () => actionQuery(getRolesUserCount)(),

@@ -1,6 +1,6 @@
 import { DashboardSidebarMenu } from "@/components/common/theme/dashboard";
 import { TDashboardApplicationId } from "./application";
-import { ServerCog } from "lucide-react";
+import { Building2, ServerCog } from "lucide-react";
 
 export const MENU_ITEMS: Record<
   TDashboardApplicationId,
@@ -11,6 +11,22 @@ export const MENU_ITEMS: Record<
   Chat: [],
   Payroll: [],
   BackOffice: [
+    {
+      label: "Company",
+      baseUrl: "company",
+      icon: Building2,
+      roles: ["Administrator", "Owner"],
+      links: [
+        {
+          label: "Company Infomation",
+          url: "info",
+        },
+        {
+          label: "Payment Channels",
+          url: "payment_channels",
+        },
+      ],
+    },
     {
       label: "Administration",
       baseUrl: "admin",

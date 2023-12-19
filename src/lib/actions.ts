@@ -19,6 +19,7 @@ export function objectToFormData(
     else if (value instanceof File) formData.append(key, value);
     else if (value instanceof Date) formData.append(key, value.toJSON());
     else if (value === null) return;
+    else if (value === undefined) return;
     else
       throw new Error(
         `Convert Fn not implemented yet. (key:${key} type: ${typeof value})`
@@ -41,6 +42,7 @@ export function handleActionError<Schema extends z.ZodTypeAny, Data>(
   message: string = "Something went wrong"
 ) {
   return (error: Omit<HookResult<Schema, Data>, "data">) => {
+    console.log(error);
     if (error.validationError) {
       if (setError)
         for (const [key, value] of Object.entries(error.validationError)) {
@@ -70,6 +72,23 @@ export function actionQuery<TInput extends ZodTypeAny, TOutput>(
 ) {
   return async (inputs: z.infer<TInput>) => {
     const result = await action(inputs);
+    if (result.validationError)
+      throw {
+        validationError: result.validationError,
+      };
+    else if (result.serverError)
+      throw {
+        serverError: result.serverError,
+      };
+    else return result.data;
+  };
+}
+
+export function actionMutation<TInput extends ZodTypeAny, TOutput>(
+  action: SafeAction<TInput, TOutput>
+) {
+  return async (inputs: z.infer<TInput>) => {
+    const result = await action(objectToFormData(inputs));
     if (result.validationError)
       throw {
         validationError: result.validationError,

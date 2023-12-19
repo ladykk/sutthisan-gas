@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import { roleAction } from ".";
 import { Roles } from "@/static/auth";
-import { getEdgeConfigs, setEdgeConfig } from "../edge-config";
+import { getEdgeConfigs, setEdgesConfig } from "../edge-config";
 
 // Get Site Config Backoffice
 export const getSiteConfigBackoffice = roleAction([Roles.Administrator])(
@@ -28,6 +28,6 @@ export type TSetSiteConfigBackofficeInput = z.infer<
 export const setSiteConfigBackoffice = roleAction([Roles.Administrator])(
   setSiteConfigBackofficeSchema,
   async (input) => {
-    return await setEdgeConfig(input);
+    return await setEdgesConfig(input);
   }
 );
