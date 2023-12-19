@@ -27,6 +27,7 @@ export default function RootLayout({
           "min-h-screen bg-background font-sans antialiased max-w-[100vw]",
           fontSans.variable
         )}
+        suppressHydrationWarning
       >
         <Providers env={env.NEXT_PUBLIC_ENV}>{children}</Providers>
       </body>

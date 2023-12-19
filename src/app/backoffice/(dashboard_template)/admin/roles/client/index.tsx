@@ -1,8 +1,10 @@
+"use client";
+import { ApplicationBadge } from "@/components/common/applications";
+import { RoleBadge } from "@/components/common/roles";
 import {
   LayoutHeadContainer,
   LayoutTitle,
-} from "@/components/backoffice/theme";
-import { Badge } from "@/components/ui/badge";
+} from "@/components/common/theme/dashboard";
 import { DataTable } from "@/components/ui/data-table";
 import { Spinner } from "@/components/ui/spinner";
 import {
@@ -41,11 +43,7 @@ export default function BackofficeUsersMgtRolesClient() {
           {
             accessorKey: "label",
             header: "Role",
-            cell: ({ row }) => (
-              <Badge style={{ backgroundColor: row.original.colorCode }}>
-                {row.original.label}
-              </Badge>
-            ),
+            cell: ({ row }) => <RoleBadge roleId={row.original.id} />,
           },
           {
             accessorKey: "description",
@@ -61,18 +59,11 @@ export default function BackofficeUsersMgtRolesClient() {
 
               return (
                 <TooltipProvider>
-                  <div className="flex gap-3 flex-wrap">
+                  <div className="flex gap-2 flex-wrap">
                     {applications.map((id) => (
-                      <Tooltip>
+                      <Tooltip key={id}>
                         <TooltipTrigger>
-                          <Badge
-                            key={id}
-                            style={{
-                              backgroundColor: APPLICATION_LIST[id].colorCode,
-                            }}
-                          >
-                            {APPLICATION_LIST[id].label}
-                          </Badge>
+                          <ApplicationBadge applicationId={id} />
                         </TooltipTrigger>
                         <TooltipContent side="bottom" className="text-sm">
                           {APPLICATION_LIST[id].description}
@@ -89,7 +80,7 @@ export default function BackofficeUsersMgtRolesClient() {
             header: "Users",
             cell: ({ row }) => {
               const count = query.data ? query.data[row.original.id] : 0;
-              return `${count} user${count > 1 ? "s" : ""}`;
+              return `${count} User${count > 1 ? "s" : ""}`;
             },
           },
         ]}

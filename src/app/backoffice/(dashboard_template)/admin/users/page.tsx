@@ -1,7 +1,7 @@
 import {
   LayoutHeadContainer,
   LayoutTitle,
-} from "@/components/backoffice/theme";
+} from "@/components/common/theme/dashboard";
 import {
   QueryClient,
   HydrationBoundary,

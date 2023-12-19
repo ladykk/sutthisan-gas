@@ -1,8 +1,10 @@
 "use client";
+import { ApplicationBadge } from "@/components/common/applications";
+import { RoleBadge } from "@/components/common/roles";
 import {
   LayoutHeadContainer,
   LayoutTitle,
-} from "@/components/backoffice/theme";
+} from "@/components/common/theme/dashboard";
 import { Badge } from "@/components/ui/badge";
 import { DataTable } from "@/components/ui/data-table";
 import {
@@ -35,9 +37,7 @@ export default function BackofficeSystemPreferencesApplicationPage() {
             accessorKey: "label",
             header: "Application",
             cell: ({ row }) => (
-              <Badge style={{ backgroundColor: row.original.colorCode }}>
-                {row.original.label}
-              </Badge>
+              <ApplicationBadge applicationId={row.original.id} />
             ),
           },
           {
@@ -52,18 +52,11 @@ export default function BackofficeSystemPreferencesApplicationPage() {
 
               return (
                 <TooltipProvider>
-                  <div className="flex gap-3 flex-wrap">
+                  <div className="flex gap-2 flex-wrap">
                     {row.original.roles.map((id) => (
                       <Tooltip>
                         <TooltipTrigger>
-                          <Badge
-                            key={id}
-                            style={{
-                              backgroundColor: ROLE_LIST[id].colorCode,
-                            }}
-                          >
-                            {ROLE_LIST[id].label}
-                          </Badge>
+                          <RoleBadge roleId={id} />
                         </TooltipTrigger>
                         <TooltipContent side="bottom" className="text-sm">
                           {ROLE_LIST[id].description}

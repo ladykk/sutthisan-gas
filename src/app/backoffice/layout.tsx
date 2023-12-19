@@ -17,7 +17,7 @@ export default async function BackOfficeLayout({
 
   if (!session) return redirect(getAuthErrorUrl("NoSession", getCallbackUrl()));
 
-  const role = await checkRole(APPLICATION_LIST.Backoffice.roles)
+  const role = await checkRole(APPLICATION_LIST.BackOffice.roles)
     .then((res) => res.data)
     .catch(() => false);
 

@@ -3,7 +3,7 @@
 import {
   LayoutHeadContainer,
   LayoutTitle,
-} from "@/components/backoffice/theme";
+} from "@/components/common/theme/dashboard";
 import { AuthAvatar, AuthCard } from "@/components/common/auth";
 import {
   AlertDialog,
