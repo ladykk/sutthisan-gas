@@ -1,5 +1,5 @@
 "use server";
-import { Roles } from "@/static/auth";
+import { Roles } from "@/static/role";
 import { roleAction } from ".";
 import { getEdgeConfig, setEdgesConfig } from "../edge-config";
 import { z } from "zod";
@@ -18,7 +18,6 @@ export const getCompanyInfo = roleAction([Roles.Administrator, Roles.Owner])(
 // Set Company Infomation
 const setCompanyInfoSchema = zfd.formData(EDGE_CONFIG_SCHEMA.companyInfo);
 export type TSetCompanyInfoInput = z.infer<typeof setCompanyInfoSchema>;
-
 export const setCompanyInfo = roleAction([Roles.Administrator, Roles.Owner])(
   setCompanyInfoSchema,
   async (input) => {

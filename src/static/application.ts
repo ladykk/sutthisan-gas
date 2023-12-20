@@ -1,4 +1,4 @@
-import { TRoleId } from "./auth";
+import { TRoleId } from "./role";
 
 export const APPLICATION_ID_ARRAY = [
   "POS",

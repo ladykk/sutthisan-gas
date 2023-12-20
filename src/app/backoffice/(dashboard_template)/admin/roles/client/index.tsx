@@ -19,7 +19,7 @@ import {
   APPLICATION_LIST,
   getApplicationsByRoleId,
 } from "@/static/application";
-import { ROLE_ARRAY } from "@/static/auth";
+import { ROLE_ARRAY } from "@/static/role";
 import { useQuery } from "@tanstack/react-query";
 
 export default function RoleClient() {

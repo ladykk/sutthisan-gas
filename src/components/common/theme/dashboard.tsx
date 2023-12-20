@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import AuthSession from "../auth";
 import { TGetUser } from "@/server/actions/auth";
 import { ApplicationSwitch } from "../applications";
-import { TRoleId } from "@/static/auth";
+import { TRoleId } from "@/static/role";
 import { usePathname } from "next/navigation";
 import {
   Accordion,

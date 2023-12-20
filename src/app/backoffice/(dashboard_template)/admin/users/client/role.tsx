@@ -51,7 +51,7 @@ import {
   grantRoleBackoffice,
   revokeRoleBackoffice,
 } from "@/server/actions/user";
-import { ROLE_ID_ARRAY, ROLE_LIST } from "@/static/auth";
+import { ROLE_ID_ARRAY, ROLE_LIST } from "@/static/role";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Network } from "lucide-react";
 import { useMemo, useState } from "react";

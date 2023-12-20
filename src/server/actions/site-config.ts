@@ -3,7 +3,7 @@ import { EDGE_CONFIG_KEYS, EDGE_CONFIG_SCHEMA } from "@/static/edge-config";
 import { z } from "zod";
 
 import { roleAction } from ".";
-import { Roles } from "@/static/auth";
+import { Roles } from "@/static/role";
 import { getEdgeConfigs, setEdgesConfig } from "../edge-config";
 
 // Get Site Config Backoffice

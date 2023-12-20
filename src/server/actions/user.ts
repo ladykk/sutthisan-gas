@@ -7,10 +7,10 @@ import {
   roleAction,
   roleMiddleware,
 } from ".";
-import { Roles, ROLE_ID_ARRAY, TRoleId } from "@/static/auth";
+import { Roles, ROLE_ID_ARRAY, TRoleId } from "@/static/role";
 import { db } from "../db";
 import { desc, like, or, sql } from "drizzle-orm";
-import { profiles, userRoles } from "../db/schema";
+import { profiles, userRoles } from "../db/schema/users";
 import { zfd } from "zod-form-data";
 import { grantRole, revokeRole } from "../functions/user";
 

@@ -1,8 +1,7 @@
 import { SafeAction, createSafeActionClient } from "next-safe-action";
-import { AuthError } from "@supabase/supabase-js";
 import { SBServerClient } from "../supabase";
 import { cookies } from "next/headers";
-import { TRoleId } from "@/static/auth";
+import { TRoleId } from "@/static/role";
 import { db } from "../db";
 
 export type ReturnSafeActionData<T extends SafeAction<any, any>> = NonNullable<
@@ -19,15 +18,9 @@ export type PaginationData<T> = {
 
 // Error handling
 function handleReturnedServerError(error: Error) {
-  if (error instanceof AuthError)
-    return {
-      serverError: error.message,
-    };
-  else {
-    return {
-      serverError: "Something went wrong.",
-    };
-  }
+  return {
+    serverError: error.message ?? "Something went wrong.",
+  };
 }
 
 // Middleware

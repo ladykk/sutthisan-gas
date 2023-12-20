@@ -1,6 +1,6 @@
 import { buttonVariants } from "@/components/ui/button";
 import { signOut } from "@/server/actions/auth";
-import { AuthErrorCode } from "@/static/auth";
+import { AuthErrorCode } from "@/static/role";
 import { LogIn, LucideIcon, Network, UserX } from "lucide-react";
 import Link from "next/link";
 import { ReactNode } from "react";

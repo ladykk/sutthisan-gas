@@ -15,7 +15,8 @@ export function objectToFormData(
   Object.entries(obj).forEach(([key, value]) => {
     if (typeof value === "string") formData.append(key, value);
     else if (typeof value === "number") formData.append(key, value.toString());
-    else if (typeof value === "boolean") formData.append(key, value.toString());
+    else if (typeof value === "boolean")
+      formData.append(key, value ? "true" : "false");
     else if (value instanceof File) formData.append(key, value);
     else if (value instanceof Date) formData.append(key, value.toJSON());
     else if (value === null) return;

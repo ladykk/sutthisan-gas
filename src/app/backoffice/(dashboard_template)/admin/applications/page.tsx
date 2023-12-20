@@ -13,7 +13,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { APPLICATION_ARRAY } from "@/static/application";
-import { ROLE_LIST } from "@/static/auth";
+import { ROLE_LIST } from "@/static/role";
 
 export default function ApplicationPage() {
   return (

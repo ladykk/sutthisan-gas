@@ -12,10 +12,12 @@ import { z } from "zod";
 import { ReturnSafeActionData, action, authAction } from ".";
 import { SBServerClient } from "../supabase";
 import { cookies } from "next/headers";
-import { CURRENT_TIMESTAMP, db } from "../db";
-import { profiles } from "../db/schema";
+import { db } from "../db";
+
+import { profiles } from "../db/schema/users";
 import { eq } from "drizzle-orm";
 import { AVATAR_BUCKET } from "../db/storage";
+import { CURRENT_TIMESTAMP } from "../db/type";
 
 // Sign In
 const signInSchema = zfd.formData({

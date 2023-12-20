@@ -13,6 +13,7 @@ export const env = createEnv({
     EDGE_CONFIG_ID: z.string(),
     EDGE_CONFIG: z.string(),
     VERCEL_TEAM_ID: z.string(),
+    SUPABASE_SERVICE_ROLE_KEY: z.string(),
   },
   clientPrefix: "NEXT_PUBLIC_",
   client: {

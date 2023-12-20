@@ -1,6 +1,6 @@
-import { TRoleId } from "@/static/auth";
+import { TRoleId } from "@/static/role";
 import { db } from "../db";
-import { userRoles } from "../db/schema";
+import { userRoles } from "../db/schema/users";
 import { and, eq } from "drizzle-orm";
 
 // Grant Role

@@ -1,41 +1,16 @@
-import { ROLE_ID_ARRAY } from "@/static/auth";
+import { ROLE_ID_ARRAY } from "@/static/role";
+import { relations } from "drizzle-orm";
 import {
-  pgTable,
-  unique,
   pgEnum,
-  uuid,
-  timestamp,
-  text,
+  pgTable,
   primaryKey,
+  text,
+  timestamp,
+  unique,
+  uuid,
 } from "drizzle-orm/pg-core";
 
-export const keyStatus = pgEnum("key_status", [
-  "expired",
-  "invalid",
-  "valid",
-  "default",
-]);
-export const keyType = pgEnum("key_type", [
-  "stream_xchacha20",
-  "secretstream",
-  "secretbox",
-  "kdf",
-  "generichash",
-  "shorthash",
-  "auth",
-  "hmacsha256",
-  "hmacsha512",
-  "aead-det",
-  "aead-ietf",
-]);
-export const factorType = pgEnum("factor_type", ["webauthn", "totp"]);
-export const factorStatus = pgEnum("factor_status", ["verified", "unverified"]);
-export const aalLevel = pgEnum("aal_level", ["aal3", "aal2", "aal1"]);
-export const codeChallengeMethod = pgEnum("code_challenge_method", [
-  "plain",
-  "s256",
-]);
-
+// Profiles
 export const profiles = pgTable(
   "profiles",
   {
@@ -57,13 +32,17 @@ export const profiles = pgTable(
   }
 );
 
+// Roles
 export const roles = pgEnum("roles", ROLE_ID_ARRAY);
 export const userRoles = pgTable(
   "user_roles",
   {
     userId: uuid("user_id")
       .notNull()
-      .references(() => profiles.id),
+      .references(() => profiles.id, {
+        onUpdate: "cascade",
+        onDelete: "cascade",
+      }),
     role: roles("role").notNull(),
   },
   (table) => {

@@ -51,6 +51,11 @@ export const zodDate = z
   }, "Invalid date")
   .transform((val) => new Date(val));
 
+export const zodBoolean = z
+  .string()
+  .refine((val) => val === "true" || val === "false", "Invalid boolean")
+  .transform((val) => (val === "true" ? true : false));
+
 export const zodFile = (options?: {
   maxSizeMB?: number;
   allowedFileTypes?: string[];

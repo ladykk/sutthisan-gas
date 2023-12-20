@@ -1,6 +1,6 @@
 import { DashboardSidebarMenu } from "@/components/common/theme/dashboard";
 import { TDashboardApplicationId } from "./application";
-import { Building2, ServerCog } from "lucide-react";
+import { Building2, Database, ServerCog } from "lucide-react";
 
 export const MENU_ITEMS: Record<
   TDashboardApplicationId,
@@ -26,6 +26,13 @@ export const MENU_ITEMS: Record<
           url: "payment_channels",
         },
       ],
+    },
+    {
+      label: "Master Data",
+      baseUrl: "master_data",
+      icon: Database,
+      roles: ["Administrator"],
+      links: [{ label: "Banks", url: "banks" }],
     },
     {
       label: "Administration",

@@ -1,4 +1,4 @@
-import { AuthErrorCode } from "@/static/auth";
+import { AuthErrorCode } from "@/static/role";
 import {
   useRouter,
   useSearchParams as useNextSearchParams,

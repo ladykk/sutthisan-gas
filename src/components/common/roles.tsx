@@ -1,4 +1,4 @@
-import { ROLE_LIST, TRoleId } from "@/static/auth";
+import { ROLE_LIST, TRoleId } from "@/static/role";
 import { Badge, BadgeProps } from "../ui/badge";
 
 type RoleBadgeProps = BadgeProps & {
